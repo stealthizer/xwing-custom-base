@@ -1,7 +1,7 @@
 // Application state
 const state = {
     selectedSize: 'small',
-    selectedFaction: 'none',
+    selectedFaction: 'rebel-alliance',
     overlays: {
         nameplate: false,
         frontarc: false,
