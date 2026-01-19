@@ -30,32 +30,15 @@
                 <!-- Base Size Selection -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium mb-3 text-gray-300">Base Size</label>
-                    <div class="space-y-2">
-                        <button
-                            id="btn-small"
-                            class="w-full py-3 px-4 rounded-lg border-2 border-gray-600 hover:border-blue-500 transition-all duration-200 bg-gray-700 hover:bg-gray-600"
-                            onclick="handleSelectSize('small')"
-                            tabindex="0"
-                            aria-label="Select small base">
-                            Small Base
-                        </button>
-                        <button
-                            id="btn-medium"
-                            class="w-full py-3 px-4 rounded-lg border-2 border-gray-600 hover:border-blue-500 transition-all duration-200 bg-gray-700 hover:bg-gray-600"
-                            onclick="handleSelectSize('medium')"
-                            tabindex="0"
-                            aria-label="Select medium base">
-                            Medium Base
-                        </button>
-                        <button
-                            id="btn-large"
-                            class="w-full py-3 px-4 rounded-lg border-2 border-gray-600 hover:border-blue-500 transition-all duration-200 bg-gray-700 hover:bg-gray-600"
-                            onclick="handleSelectSize('large')"
-                            tabindex="0"
-                            aria-label="Select large base">
-                            Large Base
-                        </button>
-                    </div>
+                    <select
+                        id="base-size-select"
+                        class="w-full py-3 px-4 rounded-lg bg-gray-700 border-2 border-gray-600 focus:border-blue-500 focus:outline-none transition-all duration-200"
+                        onchange="handleBaseSizeChange()"
+                        aria-label="Select base size">
+                        <option value="small">Small Base</option>
+                        <option value="medium">Medium Base</option>
+                        <option value="large">Large Base</option>
+                    </select>
                 </div>
 
                 <!-- Faction Selection -->

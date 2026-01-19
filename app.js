@@ -12,21 +12,9 @@ const state = {
 };
 
 // Handle base size selection
-const handleSelectSize = (size) => {
-    state.selectedSize = size;
-
-    // Update button states
-    const buttons = ['btn-small', 'btn-medium', 'btn-large'];
-    buttons.forEach(btnId => {
-        const btn = document.getElementById(btnId);
-        btn.classList.remove('border-blue-500', 'bg-blue-600');
-        btn.classList.add('border-gray-600', 'bg-gray-700');
-    });
-
-    const selectedBtn = document.getElementById(`btn-${size}`);
-    selectedBtn.classList.remove('border-gray-600', 'bg-gray-700');
-    selectedBtn.classList.add('border-blue-500', 'bg-blue-600');
-
+const handleBaseSizeChange = () => {
+    const select = document.getElementById('base-size-select');
+    state.selectedSize = select.value;
     updatePreview();
 };
 
@@ -270,10 +258,9 @@ document.addEventListener('keydown', (e) => {
 
 // Initialize application
 const initialize = () => {
-    // Set small base as selected by default
-    const smallBtn = document.getElementById('btn-small');
-    smallBtn.classList.remove('border-gray-600', 'bg-gray-700');
-    smallBtn.classList.add('border-blue-500', 'bg-blue-600');
+    // Set small base as selected by default in dropdown
+    const baseSizeSelect = document.getElementById('base-size-select');
+    baseSizeSelect.value = state.selectedSize;
 
     // Load initial preview
     updatePreview();
