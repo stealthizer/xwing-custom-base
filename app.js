@@ -28,6 +28,15 @@ const handleFactionChange = () => {
 // Handle overlay checkbox changes
 const handleOverlayChange = () => {
     state.overlays.nameplate = document.getElementById('overlay-nameplate').checked;
+
+    // Show/hide pilot information section based on nameplate checkbox
+    const pilotInfoSection = document.getElementById('pilot-info-section');
+    if (state.overlays.nameplate) {
+        pilotInfoSection.classList.remove('hidden');
+    } else {
+        pilotInfoSection.classList.add('hidden');
+    }
+
     updatePreview();
 };
 
