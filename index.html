@@ -50,7 +50,7 @@
                         onchange="handleFactionChange()"
                         aria-label="Select faction">
                         <option value="none">No Faction</option>
-                        <option value="rebel-alliance">Rebel Alliance</option>
+                        <option value="rebel-alliance" selected>Rebel Alliance</option>
                         <option value="galactic-empire">Galactic Empire</option>
                         <option value="scum-and-villainy">Scum and Villainy</option>
                     </select>
@@ -98,25 +98,35 @@
                                 aria-label="Toggle nameplate overlay">
                             <span class="text-gray-300">Nameplate</span>
                         </label>
-                        <label class="flex items-center space-x-3 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                id="overlay-frontarc"
-                                class="w-5 h-5 rounded border-gray-600 bg-gray-700 checked:bg-blue-500 focus:ring-2 focus:ring-blue-500"
-                                onchange="handleOverlayChange()"
-                                aria-label="Toggle front arc overlay">
-                            <span class="text-gray-300">Front Arc</span>
-                        </label>
-                        <label class="flex items-center space-x-3 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                id="overlay-reararc"
-                                class="w-5 h-5 rounded border-gray-600 bg-gray-700 checked:bg-blue-500 focus:ring-2 focus:ring-blue-500"
-                                onchange="handleOverlayChange()"
-                                aria-label="Toggle rear arc overlay">
-                            <span class="text-gray-300">Rear Arc</span>
-                        </label>
                     </div>
+                </div>
+
+                <!-- Front Arc Selection -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-3 text-gray-300">Front Arc</label>
+                    <select
+                        id="front-arc-select"
+                        class="w-full py-3 px-4 rounded-lg bg-gray-700 border-2 border-gray-600 focus:border-blue-500 focus:outline-none transition-all duration-200"
+                        onchange="handleArcChange()"
+                        aria-label="Select front arc type">
+                        <option value="none">None</option>
+                        <option value="frontarc">Front Arc</option>
+                        <option value="fullfrontarc">Full Front Arc</option>
+                        <option value="bullseyearc">Bullseye Arc</option>
+                    </select>
+                </div>
+
+                <!-- Back Arc Selection -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-3 text-gray-300">Back Arc</label>
+                    <select
+                        id="back-arc-select"
+                        class="w-full py-3 px-4 rounded-lg bg-gray-700 border-2 border-gray-600 focus:border-blue-500 focus:outline-none transition-all duration-200"
+                        onchange="handleArcChange()"
+                        aria-label="Select back arc type">
+                        <option value="none">None</option>
+                        <option value="reararc">Rear Arc</option>
+                    </select>
                 </div>
 
                 <!-- Export Button -->
