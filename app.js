@@ -11,6 +11,14 @@ const state = {
     initiative: ''
 };
 
+// Toggle section collapse/expand
+const toggleSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.classList.toggle('collapsed');
+    }
+};
+
 // Handle base size selection
 const handleBaseSizeChange = () => {
     const select = document.getElementById('base-size-select');
@@ -71,13 +79,17 @@ const buildImagePath = (overlay = null) => {
 
 // Load an image and return a promise
 const loadImage = (src) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         if (!src) {
             resolve(null);
             return;
         }
 
         const img = new Image();
+        // Only set crossOrigin if loading from HTTP/HTTPS (not file://)
+        if (window.location.protocol !== 'file:') {
+            img.crossOrigin = 'anonymous';
+        }
         img.onload = () => resolve(img);
         img.onerror = () => resolve(null); // Resolve with null if image doesn't exist
         img.src = src;
@@ -246,6 +258,7 @@ const drawTextOverlays = (ctx, width, height) => {
 
 // Handle export
 const handleExport = () => {
+    console.log('Export button clicked');
     const canvas = document.getElementById('preview-canvas');
 
     if (!state.selectedSize) {
@@ -253,15 +266,51 @@ const handleExport = () => {
         return;
     }
 
-    // Convert canvas to blob and download
-    canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.download = `xwing-base-${state.selectedSize}-${Date.now()}.png`;
-        link.href = url;
-        link.click();
-        URL.revokeObjectURL(url);
+    console.log('Canvas state:', {
+        hidden: canvas.classList.contains('hidden'),
+        width: canvas.width,
+        height: canvas.height
     });
+
+    // Check if canvas has content
+    if (canvas.classList.contains('hidden') || canvas.width === 0) {
+        alert('Please wait for the preview to load');
+        return;
+    }
+
+    console.log('Starting export...');
+
+    // If running from file://, use toDataURL instead of toBlob
+    if (window.location.protocol === 'file:') {
+        try {
+            const dataURL = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `xwing-base-${state.selectedSize}-${Date.now()}.png`;
+            link.href = dataURL;
+            link.click();
+            console.log('Download initiated (file:// mode)');
+        } catch (error) {
+            console.error('Export error:', error);
+            alert('Error exporting image: ' + error.message);
+        }
+    } else {
+        // Use toBlob for HTTP/HTTPS
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                console.error('Failed to create blob');
+                alert('Error exporting image. Please try again.');
+                return;
+            }
+            console.log('Blob created, downloading...');
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `xwing-base-${state.selectedSize}-${Date.now()}.png`;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+            console.log('Download initiated');
+        }, 'image/png');
+    }
 };
 
 // Keyboard event handlers for accessibility
@@ -280,6 +329,17 @@ const initialize = () => {
     // Set small base as selected by default in dropdown
     const baseSizeSelect = document.getElementById('base-size-select');
     baseSizeSelect.value = state.selectedSize;
+
+    // Set last updated date
+    const lastUpdatedElement = document.getElementById('lastUpdated');
+    if (lastUpdatedElement) {
+        const currentDate = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+        lastUpdatedElement.textContent = currentDate;
+    }
 
     // Load initial preview
     updatePreview();
