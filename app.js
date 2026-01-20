@@ -3,10 +3,10 @@ const state = {
     selectedSize: 'small',
     selectedFaction: 'rebel-alliance',
     overlays: {
-        nameplate: false,
-        frontarc: false,
-        reararc: false
+        nameplate: false
     },
+    frontArc: 'none',
+    backArc: 'none',
     pilotName: '',
     initiative: ''
 };
@@ -28,8 +28,13 @@ const handleFactionChange = () => {
 // Handle overlay checkbox changes
 const handleOverlayChange = () => {
     state.overlays.nameplate = document.getElementById('overlay-nameplate').checked;
-    state.overlays.frontarc = document.getElementById('overlay-frontarc').checked;
-    state.overlays.reararc = document.getElementById('overlay-reararc').checked;
+    updatePreview();
+};
+
+// Handle arc dropdown changes
+const handleArcChange = () => {
+    state.frontArc = document.getElementById('front-arc-select').value;
+    state.backArc = document.getElementById('back-arc-select').value;
     updatePreview();
 };
 
@@ -95,8 +100,13 @@ const updatePreview = async () => {
 
     const overlaysList = [];
     if (state.overlays.nameplate) overlaysList.push('Nameplate');
-    if (state.overlays.frontarc) overlaysList.push('Front Arc');
-    if (state.overlays.reararc) overlaysList.push('Rear Arc');
+    if (state.frontArc !== 'none') {
+        const frontArcText = state.frontArc === 'frontarc' ? 'Front Arc' :
+                           state.frontArc === 'fullfrontarc' ? 'Full Front Arc' :
+                           'Bullseye Arc';
+        overlaysList.push(frontArcText);
+    }
+    if (state.backArc !== 'none') overlaysList.push('Rear Arc');
 
     const overlaysText = overlaysList.length > 0 ? ` | Overlays: ${overlaysList.join(', ')}` : '';
     infoText.textContent = `${sizeText} Base | ${factionText}${overlaysText}`;
@@ -116,13 +126,13 @@ const updatePreview = async () => {
     // Order matters: rear arc, front arc, then nameplate on top
     const overlayImages = [];
 
-    if (state.overlays.reararc) {
-        const img = await loadImage(buildImagePath('reararc'));
+    if (state.backArc !== 'none') {
+        const img = await loadImage(buildImagePath(state.backArc));
         if (img) overlayImages.push(img);
     }
 
-    if (state.overlays.frontarc) {
-        const img = await loadImage(buildImagePath('frontarc'));
+    if (state.frontArc !== 'none') {
+        const img = await loadImage(buildImagePath(state.frontArc));
         if (img) overlayImages.push(img);
     }
 
