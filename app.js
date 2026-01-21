@@ -101,13 +101,19 @@ const buildImagePath = (overlay = null) => {
 
     // Base tile (no faction)
     if (!overlay) {
-        return `./img/ship-tile-${state.selectedSize}.png`;
+        return `./img/${state.selectedSize}/ship-tile-${state.selectedSize}.png`;
     }
 
     // Overlay tiles (with faction)
     if (state.selectedFaction === 'none') return null;
 
-    return `./img/ship-tile-${state.selectedFaction}-${state.selectedSize}-${overlay}.png`;
+    // Nameplate overlay (in nameplate subfolder with -full suffix)
+    if (overlay === 'nameplate') {
+        return `./img/${state.selectedSize}/${state.selectedFaction}/nameplate/${state.selectedFaction}-${state.selectedSize}-nameplate-full.png`;
+    }
+
+    // Arc overlays (in faction folder)
+    return `./img/${state.selectedSize}/${state.selectedFaction}/${state.selectedFaction}-${state.selectedSize}-${overlay}.png`;
 };
 
 // Load an image and return a promise
