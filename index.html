@@ -159,6 +159,17 @@
                                     oninput="handlePilotInfoChange()"
                                     aria-label="Initiative number input">
                             </div>
+                            <div>
+                                <label for="ship-icon" class="block text-xs font-medium text-gray-700 mb-1">Ship Icon (Optional)</label>
+                                <input
+                                    type="file"
+                                    id="ship-icon"
+                                    accept="image/*"
+                                    class="w-full py-2 px-3 rounded border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-gray-900 text-xs"
+                                    onchange="handleShipIconChange()"
+                                    aria-label="Upload ship icon">
+                                <p class="text-xs text-gray-500 mt-1">Upload a custom ship icon for the nameplate</p>
+                            </div>
                         </div>
                     </div>
                 </div>

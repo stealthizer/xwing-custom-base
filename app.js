@@ -8,7 +8,8 @@ const state = {
     frontArc: 'none',
     backArc: 'none',
     pilotName: '',
-    initiative: ''
+    initiative: '',
+    shipIcon: null // Will store the loaded Image object
 };
 
 // Toggle section collapse/expand
@@ -60,6 +61,38 @@ const handlePilotInfoChange = () => {
     state.pilotName = document.getElementById('pilot-name').value;
     state.initiative = document.getElementById('initiative').value;
     updatePreview();
+};
+
+// Handle ship icon upload
+const handleShipIconChange = () => {
+    const fileInput = document.getElementById('ship-icon');
+    const file = fileInput.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                state.shipIcon = img;
+                updatePreview();
+            };
+            img.onerror = () => {
+                alert('Error loading ship icon. Please try a different image.');
+                state.shipIcon = null;
+                fileInput.value = '';
+            };
+            img.src = e.target.result;
+        };
+        reader.onerror = () => {
+            alert('Error reading file. Please try again.');
+            state.shipIcon = null;
+            fileInput.value = '';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        state.shipIcon = null;
+        updatePreview();
+    }
 };
 
 // Build the image path based on current state
@@ -178,7 +211,7 @@ const updatePreview = async () => {
         ctx.drawImage(img, 0, 0);
     });
 
-    // Draw text overlays (pilot name and initiative)
+    // Draw text overlays (pilot name, initiative, and ship icon)
     drawTextOverlays(ctx, canvas.width, canvas.height);
 
     // Show canvas
@@ -190,30 +223,40 @@ const updatePreview = async () => {
 const drawTextOverlays = (ctx, width, height) => {
     // Calculate positions based on base size
     // Initiative is positioned over the left hexagonal area of the nameplate
+    // Ship icon is positioned on the right side of the nameplate
     const sizeConfig = {
         small: {
-            nameY: height * 0.78,
-            nameX: width * 0.55,
-            nameFontSize: width * 0.038,
-            initiativeX: width * 0.12,
-            initiativeY: height * 0.78,
-            initiativeFontSize: width * 0.08
+            nameY: height * 0.835,
+            nameX: width * 0.50,
+            nameFontSize: width * 0.06,
+            initiativeX: width * 0.11,
+            initiativeY: height * 0.7,
+            initiativeFontSize: width * 0.21,
+            iconX: width * 0.89,
+            iconY: height * 0.7,
+            iconSize: width * 0.18
         },
         medium: {
-            nameY: height * 0.80,
-            nameX: width * 0.55,
-            nameFontSize: width * 0.032,
-            initiativeX: width * 0.11,
-            initiativeY: height * 0.80,
-            initiativeFontSize: width * 0.065
+            nameY: height * 0.92,
+            nameX: width * 0.50,
+            nameFontSize: width * 0.05,
+            initiativeX: width * 0.072,
+            initiativeY: height * 0.82,
+            initiativeFontSize: width * 0.18,
+            iconX: width * 0.928,
+            iconY: height * 0.82,
+            iconSize: width * 0.14
         },
         large: {
-            nameY: height * 0.84,
-            nameX: width * 0.55,
-            nameFontSize: width * 0.027,
-            initiativeX: width * 0.095,
-            initiativeY: height * 0.84,
-            initiativeFontSize: width * 0.055
+            nameY: height * 0.925,
+            nameX: width * 0.5,
+            nameFontSize: width * 0.04,
+            initiativeX: width * 0.07,
+            initiativeY: height * 0.835,
+            initiativeFontSize: width * 0.16,
+            iconX: width * 0.93,
+            iconY: height * 0.835,
+            iconSize: width * 0.12
         }
     };
 
@@ -240,18 +283,45 @@ const drawTextOverlays = (ctx, width, height) => {
     // Draw initiative number
     if (state.initiative && state.initiative.trim() !== '') {
         ctx.save();
-        ctx.font = `bold ${config.initiativeFontSize}px Arial, sans-serif`;
-        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `900 ${config.initiativeFontSize}px Arial, sans-serif`;
+        ctx.fillStyle = '#FF8C00';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
         // Add text shadow for better readability
         ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-        ctx.shadowBlur = 4;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
+        ctx.shadowBlur = 3;
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
 
         ctx.fillText(state.initiative, config.initiativeX, config.initiativeY);
+        ctx.restore();
+    }
+
+    // Draw ship icon if available
+    if (state.shipIcon && state.overlays.nameplate) {
+        ctx.save();
+
+        // Calculate the scaling to fit the icon within the designated size
+        const maxSize = config.iconSize;
+        const aspectRatio = state.shipIcon.width / state.shipIcon.height;
+
+        let drawWidth, drawHeight;
+        if (aspectRatio > 1) {
+            // Wider than tall
+            drawWidth = maxSize;
+            drawHeight = maxSize / aspectRatio;
+        } else {
+            // Taller than wide or square
+            drawHeight = maxSize;
+            drawWidth = maxSize * aspectRatio;
+        }
+
+        // Center the icon on the designated position
+        const drawX = config.iconX - (drawWidth / 2);
+        const drawY = config.iconY - (drawHeight / 2);
+
+        ctx.drawImage(state.shipIcon, drawX, drawY, drawWidth, drawHeight);
         ctx.restore();
     }
 };
