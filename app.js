@@ -192,28 +192,28 @@ const drawTextOverlays = (ctx, width, height) => {
     // Initiative is positioned over the left hexagonal area of the nameplate
     const sizeConfig = {
         small: {
-            nameY: height * 0.78,
-            nameX: width * 0.55,
-            nameFontSize: width * 0.038,
-            initiativeX: width * 0.12,
-            initiativeY: height * 0.78,
-            initiativeFontSize: width * 0.08
+            nameY: height * 0.835,
+            nameX: width * 0.50,
+            nameFontSize: width * 0.06,
+            initiativeX: width * 0.11,
+            initiativeY: height * 0.7,
+            initiativeFontSize: width * 0.21
         },
         medium: {
-            nameY: height * 0.80,
-            nameX: width * 0.55,
-            nameFontSize: width * 0.032,
-            initiativeX: width * 0.11,
-            initiativeY: height * 0.80,
-            initiativeFontSize: width * 0.065
+            nameY: height * 0.92,
+            nameX: width * 0.50,
+            nameFontSize: width * 0.05,
+            initiativeX: width * 0.072,
+            initiativeY: height * 0.82,
+            initiativeFontSize: width * 0.18
         },
         large: {
-            nameY: height * 0.84,
-            nameX: width * 0.55,
-            nameFontSize: width * 0.027,
-            initiativeX: width * 0.095,
-            initiativeY: height * 0.84,
-            initiativeFontSize: width * 0.055
+            nameY: height * 0.925,
+            nameX: width * 0.5,
+            nameFontSize: width * 0.04,
+            initiativeX: width * 0.07,
+            initiativeY: height * 0.835,
+            initiativeFontSize: width * 0.16
         }
     };
 
@@ -240,16 +240,16 @@ const drawTextOverlays = (ctx, width, height) => {
     // Draw initiative number
     if (state.initiative && state.initiative.trim() !== '') {
         ctx.save();
-        ctx.font = `bold ${config.initiativeFontSize}px Arial, sans-serif`;
-        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `900 ${config.initiativeFontSize}px Arial, sans-serif`;
+        ctx.fillStyle = '#FF8C00';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
         // Add text shadow for better readability
         ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-        ctx.shadowBlur = 4;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
+        ctx.shadowBlur = 3;
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
 
         ctx.fillText(state.initiative, config.initiativeX, config.initiativeY);
         ctx.restore();
