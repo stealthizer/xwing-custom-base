@@ -9,14 +9,6 @@ const state = {
     shipIcon: null // Will store the loaded Image object
 };
 
-// Toggle section collapse/expand
-const toggleSection = (sectionId) => {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.classList.toggle('collapsed');
-    }
-};
-
 // Handle base size selection
 const handleBaseSizeChange = () => {
     const select = document.getElementById('base-size-select');
@@ -46,23 +38,11 @@ const handlePilotInfoChange = () => {
     updatePreview();
 };
 
-// Determine nameplate type based on state
-const getNameplateType = () => {
-    const hasInitiative = state.initiative && state.initiative.trim() !== '';
-    const hasPilotName = state.pilotName && state.pilotName.trim() !== '';
-
-    if (hasPilotName) {
-        return 'full'; // Show full nameplate if pilot name is provided
-    } else if (hasInitiative) {
-        return 'initiative'; // Show initiative-only nameplate if only initiative is provided
-    } else {
-        return 'none'; // No nameplate if neither is provided
-    }
-};
 
 // Handle ship icon upload
 const handleShipIconChange = () => {
     const fileInput = document.getElementById('ship-icon');
+    const removeButton = document.getElementById('remove-ship-icon');
     const file = fileInput.files[0];
 
     if (file) {
@@ -71,12 +51,14 @@ const handleShipIconChange = () => {
             const img = new Image();
             img.onload = () => {
                 state.shipIcon = img;
+                removeButton.classList.remove('hidden');
                 updatePreview();
             };
             img.onerror = () => {
                 alert('Error loading ship icon. Please try a different image.');
                 state.shipIcon = null;
                 fileInput.value = '';
+                removeButton.classList.add('hidden');
             };
             img.src = e.target.result;
         };
@@ -84,16 +66,29 @@ const handleShipIconChange = () => {
             alert('Error reading file. Please try again.');
             state.shipIcon = null;
             fileInput.value = '';
+            removeButton.classList.add('hidden');
         };
         reader.readAsDataURL(file);
     } else {
         state.shipIcon = null;
+        removeButton.classList.add('hidden');
         updatePreview();
     }
 };
 
+// Handle ship icon removal
+const handleRemoveShipIcon = () => {
+    const fileInput = document.getElementById('ship-icon');
+    const removeButton = document.getElementById('remove-ship-icon');
+
+    state.shipIcon = null;
+    fileInput.value = '';
+    removeButton.classList.add('hidden');
+    updatePreview();
+};
+
 // Build the image path based on current state
-const buildImagePath = (overlay = null, nameplateType = null) => {
+const buildImagePath = (overlay = null) => {
     if (!state.selectedSize) return null;
 
     // Base tile (no faction)
@@ -104,8 +99,9 @@ const buildImagePath = (overlay = null, nameplateType = null) => {
     // Overlay tiles (with faction)
     if (state.selectedFaction === 'none') return null;
 
-    // Nameplate overlay (in nameplate subfolder with type suffix)
-    if (overlay === 'nameplate' && nameplateType) {
+    // Nameplate overlays (in nameplate subfolder) - can be 'nameplate-initiative', 'nameplate-pilot', or 'nameplate-ship'
+    if (overlay.startsWith('nameplate-')) {
+        const nameplateType = overlay.replace('nameplate-', '');
         return `./img/${state.selectedSize}/${state.selectedFaction}/nameplate/${state.selectedFaction}-${state.selectedSize}-nameplate-${nameplateType}.png`;
     }
 
@@ -156,11 +152,16 @@ const updatePreview = async () => {
         : state.selectedFaction.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
     const overlaysList = [];
-    const nameplateType = getNameplateType();
-    if (nameplateType !== 'none') {
-        const nameplateText = nameplateType === 'initiative' ? 'Nameplate (Initiative)' : 'Nameplate (Full)';
-        overlaysList.push(nameplateText);
-    }
+
+    // Check which nameplate overlays are active
+    const hasInitiative = state.initiative && state.initiative.trim() !== '';
+    const hasPilotName = state.pilotName && state.pilotName.trim() !== '';
+    const hasShipIcon = state.shipIcon !== null;
+
+    if (hasInitiative) overlaysList.push('Initiative');
+    if (hasPilotName) overlaysList.push('Pilot Name');
+    if (hasShipIcon) overlaysList.push('Ship Icon');
+
     if (state.frontArc !== 'none') {
         const frontArcText = state.frontArc === 'frontarc' ? 'Front Arc' :
                            state.frontArc === 'fullfrontarc' ? 'Full Front Arc' :
@@ -184,7 +185,7 @@ const updatePreview = async () => {
     }
 
     // Load overlay images if applicable
-    // Order matters: rear arc, front arc, then nameplate on top
+    // Order matters: rear arc, front arc, then nameplates on top (initiative, pilot, ship)
     const overlayImages = [];
 
     if (state.backArc !== 'none') {
@@ -197,9 +198,22 @@ const updatePreview = async () => {
         if (img) overlayImages.push(img);
     }
 
-    // Load nameplate based on the determined type (reuse nameplateType from earlier)
-    if (nameplateType !== 'none') {
-        const img = await loadImage(buildImagePath('nameplate', nameplateType));
+    // Load independent nameplate overlays (only if they have values)
+    // Load initiative nameplate if initiative value exists
+    if (hasInitiative) {
+        const img = await loadImage(buildImagePath('nameplate-initiative'));
+        if (img) overlayImages.push(img);
+    }
+
+    // Load pilot nameplate if pilot name exists
+    if (hasPilotName) {
+        const img = await loadImage(buildImagePath('nameplate-pilot'));
+        if (img) overlayImages.push(img);
+    }
+
+    // Load ship nameplate if ship icon exists
+    if (hasShipIcon) {
+        const img = await loadImage(buildImagePath('nameplate-ship'));
         if (img) overlayImages.push(img);
     }
 
@@ -306,9 +320,8 @@ const drawTextOverlays = (ctx, width, height) => {
         ctx.restore();
     }
 
-    // Draw ship icon if available and nameplate is shown
-    const nameplateType = getNameplateType();
-    if (state.shipIcon && nameplateType !== 'none') {
+    // Draw ship icon if available
+    if (state.shipIcon) {
         ctx.save();
 
         // Calculate the scaling to fit the icon within the designated size
