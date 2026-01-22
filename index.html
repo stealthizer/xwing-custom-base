@@ -123,20 +123,8 @@
                         <h2 class="text-sm font-semibold text-gray-800">✏️ Pilot Information</h2>
                     </div>
                     <div id="pilot-info" class="section-content px-4 py-4 space-y-4">
-                        <div>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    id="overlay-nameplate"
-                                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                    onchange="handleOverlayChange()"
-                                    aria-label="Toggle nameplate overlay">
-                                <span class="text-xs font-medium text-gray-700">Show Nameplate</span>
-                            </label>
-                        </div>
-
-                        <!-- Pilot Information (shown when nameplate is checked) -->
-                        <div id="pilot-info-section" class="space-y-3 hidden">
+                        <!-- Pilot Information -->
+                        <div id="pilot-info-section" class="space-y-3">
                             <div>
                                 <label for="pilot-name" class="block text-xs font-medium text-gray-700 mb-1">Pilot Name</label>
                                 <input
