@@ -2,9 +2,6 @@
 const state = {
     selectedSize: 'small',
     selectedFaction: 'rebel-alliance',
-    overlays: {
-        nameplate: false
-    },
     frontArc: 'none',
     backArc: 'none',
     pilotName: '',
@@ -34,20 +31,6 @@ const handleFactionChange = () => {
     updatePreview();
 };
 
-// Handle overlay checkbox changes
-const handleOverlayChange = () => {
-    state.overlays.nameplate = document.getElementById('overlay-nameplate').checked;
-
-    // Show/hide pilot information section based on nameplate checkbox
-    const pilotInfoSection = document.getElementById('pilot-info-section');
-    if (state.overlays.nameplate) {
-        pilotInfoSection.classList.remove('hidden');
-    } else {
-        pilotInfoSection.classList.add('hidden');
-    }
-
-    updatePreview();
-};
 
 // Handle arc dropdown changes
 const handleArcChange = () => {
@@ -61,6 +44,20 @@ const handlePilotInfoChange = () => {
     state.pilotName = document.getElementById('pilot-name').value;
     state.initiative = document.getElementById('initiative').value;
     updatePreview();
+};
+
+// Determine nameplate type based on state
+const getNameplateType = () => {
+    const hasInitiative = state.initiative && state.initiative.trim() !== '';
+    const hasPilotName = state.pilotName && state.pilotName.trim() !== '';
+
+    if (hasPilotName) {
+        return 'full'; // Show full nameplate if pilot name is provided
+    } else if (hasInitiative) {
+        return 'initiative'; // Show initiative-only nameplate if only initiative is provided
+    } else {
+        return 'none'; // No nameplate if neither is provided
+    }
 };
 
 // Handle ship icon upload
@@ -96,7 +93,7 @@ const handleShipIconChange = () => {
 };
 
 // Build the image path based on current state
-const buildImagePath = (overlay = null) => {
+const buildImagePath = (overlay = null, nameplateType = null) => {
     if (!state.selectedSize) return null;
 
     // Base tile (no faction)
@@ -107,9 +104,9 @@ const buildImagePath = (overlay = null) => {
     // Overlay tiles (with faction)
     if (state.selectedFaction === 'none') return null;
 
-    // Nameplate overlay (in nameplate subfolder with -full suffix)
-    if (overlay === 'nameplate') {
-        return `./img/${state.selectedSize}/${state.selectedFaction}/nameplate/${state.selectedFaction}-${state.selectedSize}-nameplate-full.png`;
+    // Nameplate overlay (in nameplate subfolder with type suffix)
+    if (overlay === 'nameplate' && nameplateType) {
+        return `./img/${state.selectedSize}/${state.selectedFaction}/nameplate/${state.selectedFaction}-${state.selectedSize}-nameplate-${nameplateType}.png`;
     }
 
     // Arc overlays (in faction folder)
@@ -159,7 +156,11 @@ const updatePreview = async () => {
         : state.selectedFaction.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
     const overlaysList = [];
-    if (state.overlays.nameplate) overlaysList.push('Nameplate');
+    const nameplateType = getNameplateType();
+    if (nameplateType !== 'none') {
+        const nameplateText = nameplateType === 'initiative' ? 'Nameplate (Initiative)' : 'Nameplate (Full)';
+        overlaysList.push(nameplateText);
+    }
     if (state.frontArc !== 'none') {
         const frontArcText = state.frontArc === 'frontarc' ? 'Front Arc' :
                            state.frontArc === 'fullfrontarc' ? 'Full Front Arc' :
@@ -196,8 +197,9 @@ const updatePreview = async () => {
         if (img) overlayImages.push(img);
     }
 
-    if (state.overlays.nameplate) {
-        const img = await loadImage(buildImagePath('nameplate'));
+    // Load nameplate based on the determined type (reuse nameplateType from earlier)
+    if (nameplateType !== 'none') {
+        const img = await loadImage(buildImagePath('nameplate', nameplateType));
         if (img) overlayImages.push(img);
     }
 
@@ -304,8 +306,9 @@ const drawTextOverlays = (ctx, width, height) => {
         ctx.restore();
     }
 
-    // Draw ship icon if available
-    if (state.shipIcon && state.overlays.nameplate) {
+    // Draw ship icon if available and nameplate is shown
+    const nameplateType = getNameplateType();
+    if (state.shipIcon && nameplateType !== 'none') {
         ctx.save();
 
         // Calculate the scaling to fit the icon within the designated size
