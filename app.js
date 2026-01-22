@@ -9,14 +9,6 @@ const state = {
     shipIcon: null // Will store the loaded Image object
 };
 
-// Toggle section collapse/expand
-const toggleSection = (sectionId) => {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.classList.toggle('collapsed');
-    }
-};
-
 // Handle base size selection
 const handleBaseSizeChange = () => {
     const select = document.getElementById('base-size-select');

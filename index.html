@@ -11,21 +11,7 @@
             color: #333;
         }
         .section-header {
-            cursor: pointer;
             user-select: none;
-        }
-        .section-header:hover {
-            background-color: #f3f4f6 !important;
-        }
-        .section-content {
-            max-height: 2000px;
-            overflow: visible;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-        }
-        .section-content.collapsed {
-            max-height: 0;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
         }
     </style>
 </head>
@@ -46,7 +32,7 @@
 
                 <!-- Base Configuration Section -->
                 <div class="border-b border-gray-200">
-                    <div class="section-header px-4 py-3 bg-gray-50 hover:bg-gray-100" onclick="toggleSection('base-config')">
+                    <div class="section-header px-4 py-3 bg-gray-50">
                         <h2 class="text-sm font-semibold text-gray-800">🎯 Base Configuration</h2>
                     </div>
                     <div id="base-config" class="section-content px-4 py-4 space-y-4">
@@ -83,7 +69,7 @@
 
                 <!-- Arcs Section -->
                 <div class="border-b border-gray-200">
-                    <div class="section-header px-4 py-3 bg-gray-50 hover:bg-gray-100" onclick="toggleSection('arcs')">
+                    <div class="section-header px-4 py-3 bg-gray-50">
                         <h2 class="text-sm font-semibold text-gray-800">🎲 Firing Arcs</h2>
                     </div>
                     <div id="arcs" class="section-content px-4 py-4 space-y-4">
@@ -119,7 +105,7 @@
 
                 <!-- Pilot Information Section -->
                 <div class="border-b border-gray-200">
-                    <div class="section-header px-4 py-3 bg-gray-50 hover:bg-gray-100" onclick="toggleSection('pilot-info')">
+                    <div class="section-header px-4 py-3 bg-gray-50">
                         <h2 class="text-sm font-semibold text-gray-800">✏️ Pilot Information</h2>
                     </div>
                     <div id="pilot-info" class="section-content px-4 py-4 space-y-4">
@@ -174,7 +160,7 @@
 
                 <!-- Export Section -->
                 <div>
-                    <div class="section-header px-4 py-3 bg-gray-50 hover:bg-gray-100" onclick="toggleSection('export')">
+                    <div class="section-header px-4 py-3 bg-gray-50">
                         <h2 class="text-sm font-semibold text-gray-800">💾 Export</h2>
                     </div>
                     <div id="export" class="section-content px-4 py-4">
